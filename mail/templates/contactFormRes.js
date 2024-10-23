@@ -74,7 +74,7 @@ exports.contactUsEmail = (
   
   <body>
       <div class="container">
-          <a href="https://study-notion-gamma-ten.vercel.app"><img class="logo"
+          <a href="https://studynotion-weld.vercel.app/"><img class="logo"
                   src="https://i.ibb.co/7Xyj3PC/logo.png" alt="StudyNotion Logo"></a>
           <div class="message">Contact Form Confirmation</div>
           <div class="body">
