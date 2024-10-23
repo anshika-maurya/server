@@ -14,7 +14,7 @@ const cors = require("cors");
 const {cloudinaryConnect } = require("./config/cloudinary");
 const fileUpload = require("express-fileupload");
 const dotenv = require("dotenv");
-const path = require("path");
+
 
 
 dotenv.config();
@@ -43,8 +43,6 @@ app.use(
 //cloudinary connection
 cloudinaryConnect();
 
-// Serve static files from the 'public' directory
-app.use(express.static(path.join(__dirname, 'public'))); 
 
 //routes
 app.use("/api/v1/auth", userRoutes);
