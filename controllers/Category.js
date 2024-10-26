@@ -92,6 +92,9 @@ exports.categoryPageDetails = async (req, res) => {
       .populate({
         path: "courses",
         match: { status: "Published" },
+        populate: {
+          path: "instructor",
+        },
       })
       .exec()
     const allCourses = allCategories.flatMap((category) => category.courses)
