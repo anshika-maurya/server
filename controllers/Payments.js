@@ -48,10 +48,10 @@ exports.capturePayment = async (req, res) => {
       return res.status(500).json({ success: false, message: error.message })
     }
   }
-
+  const currency = "INR";
   const options = {
     amount: total_amount * 100,
-    currency: "INR",
+    currency,
     receipt: Math.random(Date.now()).toString(),
   }
 
