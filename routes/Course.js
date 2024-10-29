@@ -22,6 +22,7 @@ const {
   showAllCategories,
   createCategory,
   categoryPageDetails,
+  addCourseToCategory,
 } = require("../controllers/Category")
 
 // Sections Controllers Import
@@ -77,6 +78,8 @@ router.get("/getInstructorCourses", auth, isInstructor, getInstructorCourses)
 router.get("/getAllCourses", getAllCourses)
 // Get Details for a Specific Courses
 router.post("/getCourseDetails", getCourseDetails)
+// Edit a course
+router.post("/editCourse", auth, isInstructor, editCourse)
 // Get Details for a Specific Courses
 router.post("/getFullCourseDetails", auth, getFullCourseDetails)
 // To Update Course Progress
