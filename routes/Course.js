@@ -22,7 +22,7 @@ const {
   showAllCategories,
   createCategory,
   categoryPageDetails,
-  addCourseToCategory,
+  
 } = require("../controllers/Category")
 
 // Sections Controllers Import
@@ -44,10 +44,10 @@ const {
   createRating,
   getAverageRating,
   getAllRatingReview,
-} = require("../controllers/RatingandReview")
+} = require("../controllers/RatingAndReview")
+
 const {
   updateCourseProgress,
-  getProgressPercentage,
 } = require("../controllers/courseProgress")
 // Importing Middlewares
 const { auth, isInstructor, isStudent, isAdmin } = require("../middleware/auth")
