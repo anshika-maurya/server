@@ -364,7 +364,7 @@ exports.editCourse = async (req, res) => {
 		success: true,
 		data: {
 		  courseDetails,
-          //totalDuration,
+          totalDuration,
 		  completedVideos: courseProgressCount?.completedVideos
 			? courseProgressCount?.completedVideos
 			: ["none"],
