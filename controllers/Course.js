@@ -6,6 +6,7 @@ const User = require("../models/User")
 const { uploadImageToCloudinary } = require("../utils/imageUploader")
 const CourseProgress = require("../models/CourseProgress")
 const { convertSecondsToDuration } = require("../utils/secToDuration")
+require("dotenv").config()
 
 
 
@@ -363,7 +364,7 @@ exports.editCourse = async (req, res) => {
 		success: true,
 		data: {
 		  courseDetails,
-		  totalDuration,
+          //totalDuration,
 		  completedVideos: courseProgressCount?.completedVideos
 			? courseProgressCount?.completedVideos
 			: ["none"],
