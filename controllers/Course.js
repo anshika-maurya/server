@@ -166,7 +166,7 @@ exports.getAllCourses = async (req, res) => {
 exports.getCourseDetails = async (req,res)=>{
 	try {
 		const {courseId}=req.body;
-	const courseDetails=await Course.findById({courseId}).populate({path:"instructor",
+	const courseDetails=await Course.findById({_id: courseId}).populate({path:"instructor",
 	populate:{path:"additionalDetails"}})
 	.populate("category")
 	.populate({                    //only populate user name and image
