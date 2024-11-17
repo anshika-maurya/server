@@ -166,8 +166,7 @@ exports.getAllCourses = async (req, res) => {
 exports.getCourseDetails = async (req,res)=>{
 	try {
 		const {courseId} = req.body;
-	const courseDetails=await Course.findOne({_id: courseId}).populate({path:"instructor",
-	populate:{path:"additionalDetails"}})
+	const courseDetails = await Course.findById({_id: courseId}).populate({path:"instructor", populate:{path:"additionalDetails"}})
 	.populate("category")
 	.populate({                    //only populate user name and image
 		path:"ratingAndReviews",
@@ -330,8 +329,8 @@ exports.editCourse = async (req, res) => {
 
 		
 	  let courseProgressCount = await CourseProgress.findOne({
-		courseID: courseId,
-		userID: userId,
+		courseId: courseId,
+		userId: userId,
 	  })
   
 	  console.log("courseProgressCount : ", courseProgressCount)
@@ -483,15 +482,15 @@ exports.markLectureAsComplete = async (req, res) => {
 	}
 	try {
 	progressAlreadyExists = await CourseProgress.findOne({
-				  userID: userId,
-				  courseID: courseId,
+				  userId: userId,
+				  courseId: courseId,
 				})
 	  const completedVideos = progressAlreadyExists.completedVideos
 	  if (!completedVideos.includes(subSectionId)) {
 		await CourseProgress.findOneAndUpdate(
 		  {
-			userID: userId,
-			courseID: courseId,
+			userId: userId,
+			courseId: courseId,
 		  },
 		  {
 			$push: { completedVideos: subSectionId },
@@ -506,7 +505,7 @@ exports.markLectureAsComplete = async (req, res) => {
 	  await CourseProgress.findOneAndUpdate(
 		{
 		  userId: userId,
-		  courseID: courseId,
+		  courseId: courseId,
 		},
 		{
 		  completedVideos: completedVideos,

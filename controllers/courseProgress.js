@@ -17,7 +17,7 @@ exports.updateCourseProgress = async (req, res) => {
 
     // Find the course progress document for the user and course
     let courseProgress = await CourseProgress.findOne({
-      courseID: courseId,
+      courseId: courseId,
       userId: userId,
     })
 
@@ -58,11 +58,11 @@ exports.updateCourseProgress = async (req, res) => {
 //   try {
 //     // Find the course progress document for the user and course
 //     let courseProgress = await CourseProgress.findOne({
-//       courseID: courseId,
+//       courseId: courseId,
 //       userId: userId,
 //     })
 //       .populate({
-//         path: "courseID",
+//         path: "courseId",
 //         populate: {
 //           path: "courseContent",
 //         },
@@ -76,7 +76,7 @@ exports.updateCourseProgress = async (req, res) => {
 //     }
 //     console.log(courseProgress, userId)
 //     let lectures = 0
-//     courseProgress.courseID.courseContent?.forEach((sec) => {
+//     courseProgress.courseId.courseContent?.forEach((sec) => {
 //       lectures += sec.subSection.length || 0
 //     })
 

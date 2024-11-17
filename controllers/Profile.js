@@ -175,7 +175,7 @@ exports.getEnrolledCourses = async (req, res) => {
           userDetails.courses[i].courseContent[j].subSection.length
       }
       let courseProgressCount = await CourseProgress.findOne({
-        courseID: userDetails.courses[i]._id,
+        courseId: userDetails.courses[i]._id,
         userId: userId,
       })
       courseProgressCount = courseProgressCount?.completedVideos.length
