@@ -6,7 +6,7 @@ const User = require("../models/User")
 const { uploadImageToCloudinary } = require("../utils/imageUploader")
 const CourseProgress = require("../models/CourseProgress")
 const { convertSecondsToDuration } = require("../utils/secToDuration")
-require("dotenv").config()
+// require("dotenv").config()
 
 
 
@@ -22,10 +22,10 @@ exports.createCourse = async (req, res) => {
 			courseDescription,
 			whatYouWillLearn,
 			price,
-			tag,
+			tag: _tag,
 			category,
 			status,
-			instructions,
+			instructions: _instructions,
 		} = req.body;
 
 		// Get thumbnail image from request files
@@ -37,9 +37,10 @@ exports.createCourse = async (req, res) => {
 			!courseDescription ||
 			!whatYouWillLearn ||
 			!price ||
-			!tag ||
+			!tag.length ||
 			!thumbnail ||
-			!category
+			!category ||
+			!instructions.length
 		) {
 			return res.status(400).json({
 				success: false,
@@ -82,11 +83,11 @@ exports.createCourse = async (req, res) => {
 			instructor: instructorDetails._id,
 			whatYouWillLearn: whatYouWillLearn,
 			price,
-			tag: tag,
+			tag,
 			category: categoryDetails._id,
 			thumbnail: thumbnailImage.secure_url,
 			status: status,
-			instructions: instructions,
+			instructions,
 		});
 
 		// Add the new course to the User Schema of the Instructor
@@ -102,15 +103,16 @@ exports.createCourse = async (req, res) => {
 			{ new: true }
 		);
 		// Add the new course to the Categories
-		await Category.findByIdAndUpdate(
+		const categoryDetails2 = await Category.findByIdAndUpdate(
 			{ _id: category },
 			{
 				$push: {
-					course: newCourse._id,
+					courses: newCourse._id,
 				},
 			},
 			{ new: true }
 		);
+		console.log("Hereeeeeeee", categoryDetails2)
 		// Return the new course and a success message
 		res.status(200).json({
 			success: true,
@@ -138,7 +140,7 @@ exports.getAllCourses = async (req, res) => {
 				thumbnail: true,
 				instructor: true,
 				ratingAndReviews: true,
-				studentsEnroled: true,
+				studentsEnrolled: true,
 			}
 		)
 			.populate("instructor")
@@ -163,37 +165,60 @@ exports.getAllCourses = async (req, res) => {
 
 
 
-exports.getCourseDetails = async (req,res)=>{
+exports.getCourseDetails = async (req, res)=>{
 	try {
 		const {courseId} = req.body;
-	const courseDetails = await Course.findById({_id: courseId}).populate({path:"instructor", populate:{path:"additionalDetails"}})
-	.populate("category")
-	.populate({                    //only populate user name and image
-		path:"ratingAndReviews",
-		populate:{path:"user"
-		,select:"firstName lastName accountType image"}
-	})
-	.populate({path:"courseContent",populate:{path:"subSection"}})
-	.exec();
+	    const courseDetails = await Course.findOne({
+			_id: courseId,
+		})
+		.populate({
+			path:"instructor",
+			populate:{
+				path:"additionalDetails",
+			},
+		})
+	     .populate("category")
+	     .populate("ratingAndReviews")
+		 .populate({
+			path:"courseContent",
+			populate:{
+				path: "subSection",
+				select:"-videoUrl",
+			},
+		})
+	    .exec();
 
 	if(!courseDetails){
 		return res.status(404).json({
             success:false,
-            message:"Course Not Found"
+            message:`Could not find course with id: ${courseId}`,
         })
 	}
+
+	let totalDurationInSeconds = 0
+	courseDetails.courseContent.forEach((content)=> {
+		content.subSection.forEach((subSection)=>{
+			const timeDurationInSeconds = parseInt(subSection.timeDuration)
+			totalDurationInSeconds += timeDurationInSeconds
+		})
+	})
+	const totalDuration = convertSecondsToDuration(totalDurationInSeconds)
+
 	return res.status(200).json({
         success:true,
-		message:"Course fetched successfully now",
-        data:courseDetails
-    });
+		data:{
+			courseDetails,
+			totalDuration,
+		},
+		
+    })
 		
 	} catch (error) {
-		console.log(error);
-        return res.status(404).json({
+		
+        return res.status(500).json({
             success:false,
-			message:`Can't Fetch Course Data`,
-			error:error.message
+			message:error.message,
+			
         })
 		
 	}
@@ -366,7 +391,7 @@ exports.editCourse = async (req, res) => {
           totalDuration,
 		  completedVideos: courseProgressCount?.completedVideos
 			? courseProgressCount?.completedVideos
-			: ["none"],
+			: [],
 		},
 	  })
 	} catch (error) {
