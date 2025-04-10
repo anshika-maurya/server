@@ -85,6 +85,8 @@ router.post("/updateCourseProgress", auth, isStudent, updateCourseProgress)
 // router.post("/getProgressPercentage", auth, isStudent, getProgressPercentage)
 // Delete a Course
 router.delete("/deleteCourse", deleteCourse)
+// Get Course Details by ID (RESTful route)
+router.get("/:courseId", getCourseDetails);
 
 // ********************************************************************************************************
 //                                      Category routes (Only by Admin)
