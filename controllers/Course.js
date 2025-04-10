@@ -284,7 +284,9 @@ exports.getAllCourses = async (req, res) => {
 exports.getCourseDetails = async (req, res) => {
   try {
     const { courseId } = req.body
-    const courseDetails = await Course.findOne({ _id: courseId })
+    const courseDetails = await Course.findOne({
+      _id: courseId,
+    })
       .populate({
         path: "instructor",
         populate: {
@@ -309,22 +311,19 @@ exports.getCourseDetails = async (req, res) => {
       })
     }
 
-    // Optional: Uncomment to prevent public access to drafts
     // if (courseDetails.status === "Draft") {
     //   return res.status(403).json({
     //     success: false,
     //     message: `Accessing a draft course is forbidden`,
-    //   })
+    //   });
     // }
 
     let totalDurationInSeconds = 0
     courseDetails.courseContent.forEach((content) => {
-      if (Array.isArray(content.subSection)) {
-        content.subSection.forEach((subSection) => {
-          const timeDurationInSeconds = parseInt(subSection.timeDuration || 0)
-          totalDurationInSeconds += timeDurationInSeconds
-        })
-      }
+      content.subSection.forEach((subSection) => {
+        const timeDurationInSeconds = parseInt(subSection.timeDuration)
+        totalDurationInSeconds += timeDurationInSeconds
+      })
     })
 
     const totalDuration = convertSecondsToDuration(totalDurationInSeconds)
@@ -343,7 +342,6 @@ exports.getCourseDetails = async (req, res) => {
     })
   }
 }
-
 exports.getFullCourseDetails = async (req, res) => {
   try {
     const { courseId } = req.body
