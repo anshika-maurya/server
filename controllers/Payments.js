@@ -35,7 +35,13 @@ exports.capturePayment = async (req, res) => {
 
       // Check if the user is already enrolled in the course
       const uid = new mongoose.Types.ObjectId(userId);
-      if (course.studentsEnroled.includes(uid)) {
+      
+      // Fix for the inconsistent field name - check both fields or use the one that exists
+      const isEnrolled = course.studentsEnrolled ? 
+                         course.studentsEnrolled.includes(uid) : 
+                         (course.studentsEnroled ? course.studentsEnroled.includes(uid) : false);
+                         
+      if (isEnrolled) {
         return res
           .status(200)
           .json({ success: false, message: "Student is already Enrolled" })
@@ -148,10 +154,15 @@ const enrollStudents = async (courses, userId, res) => {
 
   for (const courseId of courses) {
     try {
-      // Find the course and enroll the student in it
+      // Find the course and enroll the student in it - update both field names to ensure compatibility
       const enrolledCourse = await Course.findOneAndUpdate(
         { _id: courseId },
-        { $push: { studentsEnrolled: userId } },
+        { 
+          $push: { 
+            studentsEnrolled: userId,
+            studentsEnroled: userId  // Update both fields for backward compatibility
+          } 
+        },
         { new: true }
       )
 

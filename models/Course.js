@@ -46,6 +46,13 @@ const coursesSchema = new mongoose.Schema({
       ref: "user",
     },
   ],
+  // Adding studentsEnroled for backward compatibility 
+  studentsEnroled: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "user",
+    },
+  ],
   instructions: {
     type: [String],
   },
@@ -57,4 +64,36 @@ const coursesSchema = new mongoose.Schema({
 })
 
 // Export the Courses model
-module.exports = mongoose.model("Course", coursesSchema)
+const Course = mongoose.model("Course", coursesSchema)
+
+// Add a middleware to sync studentsEnrolled and studentsEnroled
+coursesSchema.pre('save', function(next) {
+  // Ensure both fields are synchronized
+  if (this.isModified('studentsEnrolled')) {
+    this.studentsEnroled = [...this.studentsEnrolled];
+  }
+  if (this.isModified('studentsEnroled')) {
+    this.studentsEnrolled = [...this.studentsEnroled];
+  }
+  next();
+});
+
+// Also sync these fields on updates
+coursesSchema.pre('findOneAndUpdate', function(next) {
+  const update = this.getUpdate();
+  // If we're pushing to studentsEnrolled, also push to studentsEnroled
+  if (update && update.$push && update.$push.studentsEnrolled) {
+    if (!update.$push.studentsEnroled) {
+      update.$push.studentsEnroled = update.$push.studentsEnrolled;
+    }
+  }
+  // And vice versa
+  if (update && update.$push && update.$push.studentsEnroled) {
+    if (!update.$push.studentsEnrolled) {
+      update.$push.studentsEnrolled = update.$push.studentsEnroled;
+    }
+  }
+  next();
+});
+
+module.exports = Course
